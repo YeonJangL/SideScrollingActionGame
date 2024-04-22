@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class Player : Entity
 {
+    [Header("Attack info")]
+    public Vector2[] attackMovement;
+
+    public bool isBusy { get; private set; }
+
     [Header("Move info")]
     public float moveSpeed = 5f;
     public float jumpForce;
@@ -12,6 +17,11 @@ public class Player : Entity
     public PlayerStateMachine stateMachine { get; private set; }
     public PlayerIdleState idleState { get; private set; }
     public PlayerMoveState moveState { get; private set; }
+    public PlayerAttack playerattack { get; private set; }
+    public PlayerAirState airState { get; private set; }
+    public PlayerJumpState jumpState { get; private set; }
+    public PlayerWallSlideState wallSlide { get; private set; }
+    public PlayerWallJumpState wallJump { get; private set; }
     #endregion
 
     protected override void Awake()
@@ -20,7 +30,12 @@ public class Player : Entity
         stateMachine = new PlayerStateMachine();
 
         idleState = new PlayerIdleState(this, stateMachine, "Idle");
-        moveState = new PlayerMoveState(this, stateMachine, "Move");
+        moveState = new PlayerMoveState(this, stateMachine, "Walk");
+        playerattack = new PlayerAttack(this, stateMachine, "Attack");
+        airState = new PlayerAirState(this, stateMachine, "Jump");
+        jumpState = new PlayerJumpState(this, stateMachine, "Jump");
+        wallSlide = new PlayerWallSlideState(this, stateMachine, "Fall");
+        wallJump = new PlayerWallJumpState(this, stateMachine, "Jump");
     }
 
     protected override void Start()
@@ -35,6 +50,15 @@ public class Player : Entity
         base.Update();
 
         stateMachine.currentState.Update();
+    }
+
+    public IEnumerator BusyFor(float _seconds)
+    {
+        isBusy = true;
+
+        yield return new WaitForSeconds(_seconds);
+
+        isBusy = false;
     }
 
     public void AnimationTrigger() => stateMachine.currentState.AnimationFinishTrigger();

@@ -13,7 +13,7 @@ public class PlayerState
     protected float yInput;
     private string animBoolName;
 
-    protected float startTimer;
+    protected float stateTimer;
     protected bool triggerCalled;
 
     public PlayerState(Player player, PlayerStateMachine stateMachine, string animBoolName)
@@ -32,7 +32,7 @@ public class PlayerState
 
     public virtual void Update()
     {
-        startTimer -= Time.time;
+        stateTimer -= Time.deltaTime;
 
         xInput = Input.GetAxisRaw("Horizontal");
         yInput = Input.GetAxisRaw("Vertical");

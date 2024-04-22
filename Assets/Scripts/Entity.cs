@@ -24,7 +24,7 @@ public class Entity : MonoBehaviour
 
     protected virtual void Start()
     {
-        anim = GetComponent<Animator>();
+        anim = GetComponentInChildren<Animator>();
         rb = GetComponent<Rigidbody2D>();
     }
 

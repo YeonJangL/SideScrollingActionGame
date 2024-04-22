@@ -24,7 +24,7 @@ public class PlayerGroundState : PlayerState
 
         if (Input.GetKeyDown(KeyCode.F))
         {
-            stateMachine.ChangeState(player.Attack);
+            stateMachine.ChangeState(player.playerattack);
         }
 
         if (!player.IsGroundDetected())
@@ -32,7 +32,7 @@ public class PlayerGroundState : PlayerState
             stateMachine.ChangeState(player.airState);
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) || player.IsGroundDetected())
+        if (Input.GetKeyDown(KeyCode.Space) && player.IsGroundDetected())
         {
             stateMachine.ChangeState(player.jumpState);
         }
