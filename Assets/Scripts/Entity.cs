@@ -4,10 +4,16 @@ using UnityEngine;
 
 public class Entity : MonoBehaviour
 {
+    public int maxHealth = 100;
+    public int currentHealth;
+
     public Animator anim { get; private set; }
     public Rigidbody2D rb { get; private set; }
+    public EntityFX fx { get; private set; }
 
     [Header("Collision info")]
+    public Transform attackCheck;
+    public float attackCheckRadius;
     [SerializeField] protected Transform groundCheck;
     [SerializeField] protected float groundCheckDistance;
     [SerializeField] protected Transform wallCheck;
@@ -19,7 +25,7 @@ public class Entity : MonoBehaviour
 
     protected virtual void Awake()
     {
-
+        currentHealth = maxHealth;
     }
 
     protected virtual void Start()
@@ -31,6 +37,21 @@ public class Entity : MonoBehaviour
     protected virtual void Update()
     {
 
+    }
+
+    public virtual void Damage(int damageAmount)
+    {
+        currentHealth -= damageAmount;
+        
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    public virtual void Die()
+    {
+        Debug.Log("Á×À½");
     }
 
     #region Velocity
@@ -51,6 +72,7 @@ public class Entity : MonoBehaviour
     {
         Gizmos.DrawLine(groundCheck.position, new Vector3(groundCheck.position.x, groundCheck.position.y - groundCheckDistance, groundCheckDistance));
         Gizmos.DrawLine(wallCheck.position, new Vector3(wallCheck.position.x + wallCheckDistance, wallCheck.position.y));
+        Gizmos.DrawWireSphere(attackCheck.position, attackCheckRadius);
     }
     #endregion
 
