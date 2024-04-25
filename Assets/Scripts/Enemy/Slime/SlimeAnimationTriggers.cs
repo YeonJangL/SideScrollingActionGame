@@ -19,7 +19,7 @@ public class SlimeAnimationTriggers : MonoBehaviour
         {
             if (hit.GetComponent<Player>() != null)
             {
-                hit.GetComponent<Player>().Damage(100);
+                hit.GetComponent<Player>().Damage();
             }
         }
     }

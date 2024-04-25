@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Enemy : Entity
 {
@@ -23,7 +25,12 @@ public class Enemy : Entity
     public float attackDistance;
     public float attackCooldown;
     [HideInInspector] public float lastTimeAttacked;
-    public int attackDamage;
+    public int enemyAttackDamage;
+
+    protected override int attackDamage => 10;
+
+
+    bool isenemyDead = false;
 
     public EnemyStateMachine stateMachine { get; private set; }
 
@@ -34,18 +41,43 @@ public class Enemy : Entity
         stateMachine = new EnemyStateMachine();
     }
 
+    protected override void Start()
+    {
+        base.Start();
+    }
+
     protected override void Update()
     {
         base.Update();
 
         stateMachine.currentState.Update();
+
+        StartCoroutine(CheckDead());
+
+        if (isenemyDead) return;
     }
 
-    public override void Die()
+    IEnumerator CheckDead()
     {
-        base.Die();
+        // 땅으로 떨어지면
+        if (transform.position.y < -8)
+        {
+            Destroy(gameObject);
+        }
 
-        // 죽음 애니메이션 추가
+        // 체력 0이하
+        if (currentHealth <= 0)
+        {
+            isenemyDead = true;
+            anim.SetBool("Die", true);
+
+            Destroy(gameObject);
+            //GetComponent<Collider2D>().enabled = false; // 충돌체 비활성화
+
+            //Destroy(gameObject, 2f);
+
+            yield return new WaitForSeconds(2);
+        }
     }
 
     public virtual void OpenCounterAttackWindow()

@@ -1,13 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Player : Entity
 {
+    [Header("UI")]
+    public Image healthBar;
+
     [Header("Attack info")]
     public Vector2[] attackMovement;
+    protected override int attackDamage => 50;
 
     public bool isBusy { get; private set; }
+
+    bool isplayerDead = false;
 
     [Header("Move info")]
     public float moveSpeed = 5f;
@@ -24,7 +32,6 @@ public class Player : Entity
     public PlayerWallJumpState wallJump { get; private set; }
     public PlayerSitDownState sitDown { get; private set; }
     public PlayerRunState runState { get; private set; }
-    public PlayerDieState dieState { get; private set; }
     #endregion
 
     protected override void Awake()
@@ -41,7 +48,6 @@ public class Player : Entity
         wallJump = new PlayerWallJumpState(this, stateMachine, "Jump");
         sitDown = new PlayerSitDownState(this, stateMachine, "SitDown");
         runState = new PlayerRunState(this, stateMachine, "Run");
-        dieState = new PlayerDieState(this, stateMachine, "Die");
     }
 
     protected override void Start()
@@ -56,13 +62,43 @@ public class Player : Entity
         base.Update();
 
         stateMachine.currentState.Update();
+
+        StartCoroutine(CheckDead());
+
+        if (isplayerDead) return;
     }
 
-    public override void Die()
+    IEnumerator CheckDead()
     {
-        base.Die();
+        // 땅으로 떨어지면
+        if (transform.position.y < -8)
+        {
+            SceneManager.LoadScene("SampleScene");
+        }
 
-        stateMachine.ChangeState(dieState);
+        // 체력 0이하
+        if (currentHealth <= 0)
+        {
+            isplayerDead = true;
+            anim.SetBool("Die", true);
+            //GetComponent<Collider2D>().enabled = false; // 충돌체 비활성화
+
+            yield return new WaitForSeconds(2);
+
+            SceneManager.LoadScene("SampleScene");
+        }
+    }
+
+    // 체력이 감소할 때마다 healthBar의 filled 이미지를 조절하는 메서드
+    public override void Damage()
+    {
+        base.Damage();
+
+        if (healthBar != null)
+        {
+            // 체력을 감소한 비율로 filled 이미지 조절
+            healthBar.fillAmount = (float)currentHealth / maxHealth;
+        }
     }
 
     public IEnumerator BusyFor(float _seconds)

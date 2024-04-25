@@ -1,15 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Entity : MonoBehaviour
 {
     public int maxHealth = 100;
     public int currentHealth;
 
+    protected virtual int attackDamage { get; private set; }
+    
     public Animator anim { get; private set; }
     public Rigidbody2D rb { get; private set; }
     public EntityFX fx { get; private set; }
+
+    [Header("Knockback info")]
+    [SerializeField] protected Vector2 knockbackDirection;
+    [SerializeField] protected float knockbackDuration;
+    protected bool isKnocked;
 
     [Header("Collision info")]
     public Transform attackCheck;
@@ -30,28 +38,34 @@ public class Entity : MonoBehaviour
 
     protected virtual void Start()
     {
+        fx = GetComponent<EntityFX>();
         anim = GetComponentInChildren<Animator>();
         rb = GetComponent<Rigidbody2D>();
     }
 
     protected virtual void Update()
     {
-
-    }
-
-    public virtual void Damage(int damageAmount)
-    {
-        currentHealth -= damageAmount;
         
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
     }
 
-    public virtual void Die()
+    public virtual void Damage()
     {
-        Debug.Log("Á×À½");
+        fx.StartCoroutine("FlashFX");
+        StartCoroutine("HitKnockback");
+        currentHealth -= attackDamage;
+
+        Debug.Log(gameObject.name + "´ë¹ÌÁö");
+    }
+
+    protected virtual IEnumerator HitKnockback()
+    {
+        isKnocked = true;
+
+        rb.velocity = new Vector2(knockbackDirection.x * -facingDir, knockbackDirection.y);
+
+        yield return new WaitForSeconds(knockbackDuration);
+
+        isKnocked = false;
     }
 
     #region Velocity
