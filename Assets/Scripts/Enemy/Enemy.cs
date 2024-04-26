@@ -41,11 +41,6 @@ public class Enemy : Entity
         stateMachine = new EnemyStateMachine();
     }
 
-    protected override void Start()
-    {
-        base.Start();
-    }
-
     protected override void Update()
     {
         base.Update();
@@ -69,14 +64,17 @@ public class Enemy : Entity
         if (currentHealth <= 0)
         {
             isenemyDead = true;
-            anim.SetBool("Die", true);
+            anim.SetTrigger("Die");
 
-            Destroy(gameObject);
+            GetComponent<Enemy_Slime>().enabled = false;
+
             //GetComponent<Collider2D>().enabled = false; // 충돌체 비활성화
 
             //Destroy(gameObject, 2f);
 
             yield return new WaitForSeconds(2);
+
+            Destroy(gameObject);
         }
     }
 

@@ -104,7 +104,7 @@ public class Entity : MonoBehaviour
         {
             Flip();
         }
-        else if (rb.velocity.x < 0 && facingRight)
+        else if (_x < 0 && facingRight)
         {
             Flip();
         }

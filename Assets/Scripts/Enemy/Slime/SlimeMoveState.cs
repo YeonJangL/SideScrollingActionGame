@@ -26,6 +26,7 @@ public class SlimeMoveState : SlimeGroundedState
 
         if (enemy.IsWallDetected() || !enemy.IsGroundDetected())
         {
+            enemy.Flip();
             stateMachine.ChangeState(enemy.idleState);
         }
     }

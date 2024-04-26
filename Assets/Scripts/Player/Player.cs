@@ -11,7 +11,7 @@ public class Player : Entity
 
     [Header("Attack info")]
     public Vector2[] attackMovement;
-    protected override int attackDamage => 50;
+    protected override int attackDamage => 10;
 
     public bool isBusy { get; private set; }
 
@@ -77,11 +77,15 @@ public class Player : Entity
         }
 
         // 체력 0이하
-        if (currentHealth <= 0)
+        if (currentHealth == 0)
         {
             isplayerDead = true;
+            ZeroVelocity();
+
             anim.SetBool("Die", true);
+
             //GetComponent<Collider2D>().enabled = false; // 충돌체 비활성화
+
 
             yield return new WaitForSeconds(2);
 
